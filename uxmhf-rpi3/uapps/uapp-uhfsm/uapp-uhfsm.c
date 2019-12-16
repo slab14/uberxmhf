@@ -33,8 +33,8 @@
  */
 
 /*
-	uhsign hypapp
-	guest hypercall to generate HMAC signature of data blob
+	uhfsm hypapp
+	guest hypercall to perform predefined FSM logic
 
         authors: matt mccormack (<matthew.mccormack@live.com>)
                 amit vasudevan (<amitvasudevan@acm.org>)
@@ -47,6 +47,7 @@
 #include <debug.h>
 
 #include <uhfsm.h>
+#include <xmhfcrypto.h>
 
 
 //////
@@ -70,8 +71,6 @@ unsigned char whitelist_hash[] = {
 //physical address and size
 //return: true if ok, false if not
 bool uapp_uhfsm_check_whitelist(uint32_t paddr, uint32_t size){
-  hash_state md;
-  int i;
   unsigned char computed_hash[HASH_SIZE];
 
   if ( sha1_memory((const unsigned char *)paddr, size, &computed_hash, HASH_SIZE) == CRYPT_OK ){
@@ -129,7 +128,7 @@ void uapp_uhfsm_checkacl(uint32_t va){
       #if 0
       _XDPRINTFSMP_("va to pa mapping=0x%08x\n", __func__, paddr);
       #endif
-      if(uapp_uhsign_check_whitelist(paddr, WHITELIST_COMPARE_BYTES)){
+      if(uapp_uhfsm_check_whitelist(paddr, WHITELIST_COMPARE_BYTES)){
           //_XDPRINTFSMP_("ACL passed\n");
           //acl passed
       }else{
@@ -141,9 +140,6 @@ void uapp_uhfsm_checkacl(uint32_t va){
     #endif
 }
 
-
-__attribute__((section(".data"))) unsigned char key[]="super_secret_key_for_hmac";
-#define KEY_SIZE (sizeof(key))
 
 bool uapp_uhfsm_handlehcall(u32  uhcall_function, void *uhcall_buffer, u32 uhcall_buffer_len)
 {
@@ -163,47 +159,47 @@ bool uapp_uhfsm_handlehcall(u32  uhcall_function, void *uhcall_buffer, u32 uhcal
   uapp_uhfsm_checkacl(sysreg_read_elrhyp());
 
   //FSM
-  if uhcp.currentState==1 {
-      uhcp.newSampleingRate=uhcp.samplingRate;
-      if(strcmp(uhcp.eventString, "max-login-attempts")==0) 
-	uhcp.newCurrentState=uhcp.currentState+1;
-      else if(strcmp(uhcp.eventString, "state-reset")==0) {
-	uhcp.newCurrentState=1;
-	uhcp.newSamplingRate=uhcp.defaultSamplingRate;
-      }
-      else if(strcmp(uhcp.eventString, "device-unavailable")==0)
-      	uhcp.newCurrentState=uhcp.currentState+1;
-      else if(strcmp(uhcp.eventString, "dlc-motion-sense")==0) 
-	uhcp.newCurrentState=1;
-      else
-      	uhcp.newCurrentState=uhcp.currentState;
+  if(uhcp->currentState==1) {
+    uhcp->newSamplingRate=uhcp->samplingRate;
+    if(strcmp(uhcp->eventString, "max-login-attempts")==0) 
+      uhcp->newCurrentState=uhcp->currentState+1;
+    else if(strcmp(uhcp->eventString, "state-reset")==0) {
+      uhcp->newCurrentState=1;
+      uhcp->newSamplingRate=uhcp->defaultSamplingRate;
     }
-  else if uhcp.currentState==2 {
-      uhcp.newSampleingRate=uhcp.samplingRate;
-      if(strcmp(uhcp.eventString, "dlc-motion-sense")==0) 
-	uhcp.newCurrentState=2;
-      else if(strcmp(uhcp.eventString, "state-reset")==0) {
-	uhcp.newCurrentState=1;
-	uhcp.newSamplingRate=uhcp.defaultSamplingRate;
-      }
-      else if(strcmp(uhcp.eventString, "max-login-attempts")==0) 
-	uhcp.newCurrentState=2;
-      else
-      	uhcp.newCurrentState=uhcp.currentState;
+    else if(strcmp(uhcp->eventString, "device-unavailable")==0)
+      uhcp->newCurrentState=uhcp->currentState+1;
+    else if(strcmp(uhcp->eventString, "dlc-motion-sense")==0) 
+      uhcp->newCurrentState=1;
+    else
+      uhcp->newCurrentState=uhcp->currentState;
+  }
+  else if(uhcp->currentState==2) {
+    uhcp->newSamplingRate=uhcp->samplingRate;
+    if(strcmp(uhcp->eventString, "dlc-motion-sense")==0) 
+      uhcp->newCurrentState=2;
+    else if(strcmp(uhcp->eventString, "state-reset")==0) {
+      uhcp->newCurrentState=1;
+      uhcp->newSamplingRate=uhcp->defaultSamplingRate;
     }
-  else if uhcp.currentState==3 {
-      if(strcmp(uhcp.eventString, "state-reset")==0) {
-	uhcp.newCurrentState=1;
-	uhcp.newSamplingRate=uhcp.defaultSamplingRate;
-      }
-      else {
-	uhcp.newCurrentState=uhcp.currentState;
-	uhcp.newSamplingRate=uhcp.samplingRate;
-      }
+    else if(strcmp(uhcp->eventString, "max-login-attempts")==0) 
+      uhcp->newCurrentState=2;
+    else
+      uhcp->newCurrentState=uhcp->currentState;
+  }
+  else if(uhcp->currentState==3) {
+    if(strcmp(uhcp->eventString, "state-reset")==0) {
+      uhcp->newCurrentState=1;
+      uhcp->newSamplingRate=uhcp->defaultSamplingRate;
     }
+    else {
+      uhcp->newCurrentState=uhcp->currentState;
+      uhcp->newSamplingRate=uhcp->samplingRate;
+    }
+  }
   else{
-    uhcp.newCurrentState=uhcp.currentState;
-    uhcp.newSamplingRate=uhcp.samplingRate;
+    uhcp->newCurrentState=uhcp->currentState;
+    uhcp->newSamplingRate=uhcp->samplingRate;
   }
 
   return true;

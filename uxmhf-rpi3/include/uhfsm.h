@@ -1,5 +1,5 @@
-#ifndef __UHSIGN_H__
-#define __UHSIGN_H__
+#ifndef __UHFSM_H__
+#define __UHFSM_H__
 
 #include <stdint.h>
 #include <inttypes.h>
@@ -16,9 +16,9 @@ typedef struct {
   uint32_t newSamplingRate;
   uint32_t defaultSamplingRate;
   uint32_t vaddr;
-}uhsign_param_t;
+}uhfsm_param_t;
 
 
 #endif // __ASSEMBLY__
 
-#endif // __UHSIGN_H__
+#endif // __UHFSM_H__
