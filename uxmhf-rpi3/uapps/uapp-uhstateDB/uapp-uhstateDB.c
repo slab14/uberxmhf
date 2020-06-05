@@ -33,7 +33,7 @@
  */
 
 /*
-	uagent hypapp
+	uhstateDB hypapp
 	guest hypercall to protected DB, containing the current and max states
 
         authors: matt mccormack (<matthew.mccormack@live.com>)
@@ -49,51 +49,49 @@
 #include <uhstateDB.h>
 #include <whitelist.h>
 
-int stateDB[MAX_STATES]={0};
-int maxStateDB[MAX_STATES]={0};
-int set=0;
+__attribute__((section(".data"))) int32_t stateDB[MAX_STATES]={0};
+__attribute__((section(".data"))) uint32_t maxStateDB[MAX_STATES]={0};
+__attribute__((section(".data"))) int32_t DB_SET=0;
 
 bool uapp_uhstateDB_handlehcall(u32  uhcall_function, void *uhcall_buffer, u32 uhcall_buffer_len)
 {
   uhstatedb_param_t *uhcp;
   uhcp = (uhstatedb_param_t *)uhcall_buffer;
   int i;
-  
-  if(!set) {
+
+  //call acl function
+  uapp_checkacl(sysreg_read_elrhyp());
+
+  if(DB_SET==0) {
     if(uhcall_function != UAPP_UHSTATEDB_FUNCTION_INIT)
       return false;
-
-    //call acl function
-    uapp_checkacl(sysreg_read_elrhyp());
 
     // Initialize maximum state values, based upon input
     for(i=0; i<uhcp->numStates; i++){
       maxStateDB[i]=uhcp->maxArray[i];
     }
     // only allow this to run once.
-    set = 1;
+    DB_SET = 1;
     return true;
   }
 
-  if((uhcall_function != UAPP_UHSTATEDB_FUNCTION_GET) || (uhcall_function != UAPP_UHSTATEDB_FUNCTION_NEXT))
-    return false;
+  if((uhcall_function == UAPP_UHSTATEDB_FUNCTION_GET) || (uhcall_function == UAPP_UHSTATEDB_FUNCTION_NEXT)) {
 
-  //debug dump
-  #if 0
-  _XDPRINTFSMP_("%s: elr_hyp va=0x%08x\n", __func__, sysreg_read_elrhyp());
-  #endif
+    #if 0
+    //debug dump
+    _XDPRINTFSMP_("%s: elr_hyp va=0x%08x\n", __func__, sysreg_read_elrhyp());
+    #endif
 
-  //call acl function
-  uapp_checkacl(sysreg_read_elrhyp());
-
-  if(uhcall_function == UAPP_UHSTATEDB_FUNCTION_GET) {
-    memcpy(&uhcp->stateVal, &stateDB[uhcp->deviceID], sizeof(int));
-    return true;
-  } else if(uhcall_function == UAPP_UHSTATEDB_FUNCTION_NEXT) {
-    if (stateDB[uhcp->deviceID]<maxStateDB[uhcp->deviceID])  
-      stateDB[uhcp->deviceID]++;
-    return true;
-  } else {
-    return false;
+    if(uhcall_function == UAPP_UHSTATEDB_FUNCTION_GET) {
+      uhcp->stateVal=stateDB[uhcp->deviceID];
+      return true;
+    } else if(uhcall_function == UAPP_UHSTATEDB_FUNCTION_NEXT) {
+      if (stateDB[uhcp->deviceID]<maxStateDB[uhcp->deviceID])  
+	stateDB[uhcp->deviceID]++;
+      return true;
+    } else {
+      return false;
+    }
   }
+  return false;
 }

@@ -66,7 +66,7 @@ void init(void *bufptr) {
 
 void get(void *bufptr) {
   uhstatedb_param_t *ptr_uhcp = (uhstatedb_param_t *)bufptr;
-  if(!uhcall(UAPP_UHSTATEDB_FUNCTION_GET, ptr_uhcp, sizeof(uhstatedb_param_t)))    
+  if(!uhcall(UAPP_UHSTATEDB_FUNCTION_GET, ptr_uhcp, sizeof(uhstatedb_param_t)))
     printf("hypercall FAILED\n");
   else {
     printf("SUCCESS\n");
@@ -86,8 +86,8 @@ void next(void *bufptr) {
 
 
 int main() {
-  int numDevices=3;
-  int maxArray[numDevices];
+  uint32_t numDevices=3;
+  uint32_t maxArray[numDevices];
   int i;
   for(i=0;i<numDevices; i++) {
     maxArray[i]=2*i+1;
@@ -100,16 +100,33 @@ int main() {
   printf("[] passing uhstateDB_param_t to init\n");
   init((void *)&uhcp);
 
-  uhcp.deviceID=1;
+  uhcp.deviceID=0;
   printf("[] getting state value for device %d \n", uhcp.deviceID);
   get((void *)&uhcp);
 
-  uhcp.deviceID=2;
+  uhcp.deviceID=1;
   printf("[] transitioning state value for device %d \n", uhcp.deviceID);
   get((void *)&uhcp);
   next((void *)&uhcp);
   get((void *)&uhcp);
 
+  uhcp.deviceID=0;  
+  printf("[] attempting to transitioning state value for device %d above it's max (to 3, max is 1) \n", uhcp.deviceID);
+  next((void *)&uhcp);
+  next((void *)&uhcp);
+  next((void *)&uhcp);  
+  get((void *)&uhcp);
+
+  uhcp.deviceID=2;  
+  printf("[] transitioning state value for device %d to 3 (max is 5) \n", uhcp.deviceID);
+  printf("  -- initial value");
+  get((void *)&uhcp);   
+  next((void *)&uhcp);
+  next((void *)&uhcp);
+  next((void *)&uhcp);
+  printf("  -- final value");  
+  get((void *)&uhcp); 
+  
   printf("[] test complete\n");
     
   return 0;
