@@ -40,9 +40,15 @@ export prefix=/usr/local
 
 export SECBOOT := n
 export DMAPROT := n
-export ENABLE_UAPP_UHSIGN := n
+
+export ENABLE_UAPP_UHSIGN := y
+export ENABLE_UAPP_UAGENT := y
+export ENABLE_UAPP_PVDRIVER_UART := n
+
 export ENABLE_DEBUG_UART := n
-export ENABLE_DEBUG_UART_PL011 := n
+export ENABLE_UART_MINI := n
+export ENABLE_UART_PL011 := n
+export ENABLE_UART_PL011_CTSRTS := n
 
 
 INCS = -I$(UXMHFRPI3_DIR)/libs/libxmhfc/include
@@ -75,12 +81,30 @@ ifeq ($(ENABLE_UAPP_UHSIGN),y)
 	CFLAGS_DEFS += -D__ENABLE_UAPP_UHSIGN__
 endif
 
+ifeq ($(ENABLE_UAPP_UAGENT),y)
+	CFLAGS_DEFS += -D__ENABLE_UAPP_UAGENT__
+endif
+
+ifeq ($(ENABLE_UAPP_PVDRIVER_UART),y)
+	CFLAGS_DEFS += -D__ENABLE_UAPP_PVDRIVER_UART__
+endif
+
+
 ifeq ($(ENABLE_DEBUG_UART),y)
 	CFLAGS_DEFS += -D__DEBUG_UART__
 endif
 
-ifeq ($(ENABLE_DEBUG_UART_PL011),y)
-	CFLAGS_DEFS += -D__DEBUG_UART_PL011__
+
+ifeq ($(ENABLE_UART_MINI),y)
+	CFLAGS_DEFS += -D__ENABLE_UART_MINI__
+endif
+
+ifeq ($(ENABLE_UART_PL011),y)
+	CFLAGS_DEFS += -D__ENABLE_UART_PL011__
+endif
+
+ifeq ($(ENABLE_UART_PL011_CTSRTS),y)
+	CFLAGS_DEFS += -D__ENABLE_UART_PL011_CTSRTS__
 endif
 
 CFLAGS = $(CFLAGS_DEFS) -c -Wall -nostdlib -nostartfiles -ffreestanding -mcpu=cortex-a53

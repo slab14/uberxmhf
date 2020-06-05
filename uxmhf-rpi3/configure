@@ -583,9 +583,13 @@ PACKAGE_URL=''
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
-RPI3CONFIG_ENABLE_DEBUG_UART_PL011
-ENABLE_DEBUG_UART_PL011
+ENABLE_UART_PL011_CTSRTS
+RPI3CONFIG_ENABLE_UART_PL011
+ENABLE_UART_PL011
+ENABLE_UART_MINI
 ENABLE_DEBUG_UART
+ENABLE_UAPP_PVDRIVER_UART
+ENABLE_UAPP_UAGENT
 ENABLE_UAPP_UHSIGN
 FIQREFLECTION
 INTPROT
@@ -657,8 +661,12 @@ enable_dmaprot
 enable_intprot
 enable_fiqreflection
 enable_uapp_uhsign
+enable_uapp_uagent
+enable_uapp_pvdriver_uart
 enable_debug_uart
-enable_debug_uart_pl011
+enable_uart_mini
+enable_uart_pl011
+enable_uart_pl011_ctsrts
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1293,10 +1301,18 @@ Optional Features:
                           enable FIQ interrupt Reflection
   --enable-uapp-uhsign[=yes|no]
                           enable signing uapp
+  --enable-uapp-uagent[=yes|no]
+                          enable signing uapp
+  --enable-uapp-pvdriver-uart[=yes|no]
+                          enable UART para-virtualized driver backend uapp
   --enable-debug-uart[=yes|no]
                           enable debug via UART, default is via mini UART
-  --enable-debug-uart-pl011[=yes|no]
-                          enable debug via PL011 UART
+  --enable-uart-mini[=yes|no]
+                          enable Mini UART
+  --enable-uart-pl011[=yes|no]
+                          enable PL011 UART
+  --enable-uart-pl011-ctsrts[=yes|no]
+                          enable PL011 UART hardware flow control (CTS/RTS)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -2279,6 +2295,37 @@ else
   ENABLE_UAPP_UHSIGN=n
 fi
 
+# selectively enable/disable AES encryption functionality in hypervisor
+
+# Check whether --enable-uapp_uagent was given.
+if test "${enable_uapp_uagent+set}" = set; then :
+  enableval=$enable_uapp_uagent;
+else
+  enable_uapp_uagent=no
+fi
+
+if test "x${enable_uapp_uagent}" != "xno"; then :
+  ENABLE_UAPP_UAGENT=y
+else
+  ENABLE_UAPP_UAGENT=n
+fi
+
+
+# selectively enable/disable UART para-virtualized driver backend in hypervisor
+
+# Check whether --enable-uapp_pvdriver_uart was given.
+if test "${enable_uapp_pvdriver_uart+set}" = set; then :
+  enableval=$enable_uapp_pvdriver_uart;
+else
+  enable_uapp_pvdriver_uart=no
+fi
+
+if test "x${enable_uapp_pvdriver_uart}" != "xno"; then :
+  ENABLE_UAPP_PVDRIVER_UART=y
+else
+  ENABLE_UAPP_PVDRIVER_UART=n
+fi
+
 
 # selectively enable/disable debugging via UART
 
@@ -2296,28 +2343,62 @@ else
 fi
 
 
-# selectively enable/disable debugging via PL011 UART
+# selectively enable/disable Mini UART support
 
 
-
-# Check whether --enable-debug_uart_pl011 was given.
-if test "${enable_debug_uart_pl011+set}" = set; then :
-  enableval=$enable_debug_uart_pl011;
+# Check whether --enable-uart_mini was given.
+if test "${enable_uart_mini+set}" = set; then :
+  enableval=$enable_uart_mini;
 else
-  enable_debug_uart_pl011=no
+  enable_uart_mini=no
 fi
 
-if test "x${enable_debug_uart_pl011}" != "xno"; then :
-  ENABLE_DEBUG_UART_PL011=y
+if test "x${enable_uart_mini}" != "xno"; then :
+  ENABLE_UART_MINI=y
 else
-  ENABLE_DEBUG_UART_PL011=n
-fi
-if test "x${enable_debug_uart_pl011}" != "xno"; then :
-  RPI3CONFIG_ENABLE_DEBUG_UART_PL011=dtoverlay=pi3-miniuart-bt
-else
-  RPI3CONFIG_ENABLE_DEBUG_UART_PL011=
+  ENABLE_UART_MINI=n
 fi
 
+
+
+# selectively enable/disable PL011 UART support
+
+
+
+# Check whether --enable-uart_pl011 was given.
+if test "${enable_uart_pl011+set}" = set; then :
+  enableval=$enable_uart_pl011;
+else
+  enable_uart_pl011=no
+fi
+
+if test "x${enable_uart_pl011}" != "xno"; then :
+  ENABLE_UART_PL011=y
+else
+  ENABLE_UART_PL011=n
+fi
+if test "x${enable_uart_pl011}" != "xno"; then :
+  RPI3CONFIG_ENABLE_UART_PL011=dtoverlay=pi3-miniuart-bt
+else
+  RPI3CONFIG_ENABLE_UART_PL011=
+fi
+
+
+# selectively enable/disable PL011 UART hardware flow control
+
+
+# Check whether --enable-uart_pl011_ctsrts was given.
+if test "${enable_uart_pl011_ctsrts+set}" = set; then :
+  enableval=$enable_uart_pl011_ctsrts;
+else
+  enable_uart_pl011_ctsrts=no
+fi
+
+if test "x${enable_uart_pl011_ctsrts}" != "xno"; then :
+  ENABLE_UART_PL011_CTSRTS=y
+else
+  ENABLE_UART_PL011_CTSRTS=n
+fi
 
 
 ###### autoconf output files

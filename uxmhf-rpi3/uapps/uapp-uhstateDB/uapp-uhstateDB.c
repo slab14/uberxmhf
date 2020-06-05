@@ -87,7 +87,7 @@ bool uapp_uhstateDB_handlehcall(u32  uhcall_function, void *uhcall_buffer, u32 u
   uapp_checkacl(sysreg_read_elrhyp());
 
   if(uhcall_function == UAPP_UHSTATEDB_FUNCTION_GET) {
-    memcpy(uhcp->stateVal, stateDB[uhcp->deviceID], sizeof(int));
+    memcpy(&uhcp->stateVal, &stateDB[uhcp->deviceID], sizeof(int));
     return true;
   } else if(uhcall_function == UAPP_UHSTATEDB_FUNCTION_NEXT) {
     if (stateDB[uhcp->deviceID]<maxStateDB[uhcp->deviceID])  
