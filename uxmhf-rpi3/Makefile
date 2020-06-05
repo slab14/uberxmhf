@@ -41,8 +41,8 @@ export prefix=/usr/local
 export SECBOOT := n
 export DMAPROT := n
 
-export ENABLE_UAPP_UHSIGN := y
-export ENABLE_UAPP_UAGENT := y
+export ENABLE_UAPP_UHSIGN := n
+export ENABLE_UAPP_UAGENT := n
 export ENABLE_UAPP_PVDRIVER_UART := n
 
 export ENABLE_DEBUG_UART := n

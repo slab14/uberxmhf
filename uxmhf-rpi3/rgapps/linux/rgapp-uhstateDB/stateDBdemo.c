@@ -52,10 +52,10 @@
 #include <uhcall.h>
 #include <uhstateDB.h>
 
-__attribute__((aligned(4096))) __attribute__((section(".data"))) uhstateDB_param_t uhcp;
+__attribute__((aligned(4096))) __attribute__((section(".data"))) uhstatedb_param_t uhcp;
 
 void init(void *bufptr) {
-  uhstatedb_param_t *ptr_uhcp = (uagent_param_t *)bufptr;
+  uhstatedb_param_t *ptr_uhcp = (uhstatedb_param_t *)bufptr;
   if(!uhcall(UAPP_UHSTATEDB_FUNCTION_INIT, ptr_uhcp, sizeof(uhstatedb_param_t)))    
     printf("hypercall FAILED\n");
   else {
@@ -65,7 +65,7 @@ void init(void *bufptr) {
 }
 
 void get(void *bufptr) {
-  uhstatedb_param_t *ptr_uhcp = (uagent_param_t *)bufptr;
+  uhstatedb_param_t *ptr_uhcp = (uhstatedb_param_t *)bufptr;
   if(!uhcall(UAPP_UHSTATEDB_FUNCTION_GET, ptr_uhcp, sizeof(uhstatedb_param_t)))    
     printf("hypercall FAILED\n");
   else {
@@ -75,7 +75,7 @@ void get(void *bufptr) {
 }
 
 void next(void *bufptr) {
-  uhstatedb_param_t *ptr_uhcp = (uagent_param_t *)bufptr;
+  uhstatedb_param_t *ptr_uhcp = (uhstatedb_param_t *)bufptr;
   if(!uhcall(UAPP_UHSTATEDB_FUNCTION_NEXT, ptr_uhcp, sizeof(uhstatedb_param_t)))
     printf("hypercall FAILED\n");
   else {
@@ -87,7 +87,11 @@ void next(void *bufptr) {
 
 int main() {
   int numDevices=3;
-  int maxArray[numDevices]={1,2,3};
+  int maxArray[numDevices];
+  int i;
+  for(i=0;i<numDevices; i++) {
+    maxArray[i]=2*i+1;
+  }
 
   memcpy(&uhcp.maxArray, maxArray, sizeof(maxArray)); 
   uhcp.numStates=numDevices;
@@ -98,13 +102,13 @@ int main() {
 
   uhcp.deviceID=1;
   printf("[] getting state value for device %d \n", uhcp.deviceID);
-  get(void *)&uhcp);
+  get((void *)&uhcp);
 
   uhcp.deviceID=2;
   printf("[] transitioning state value for device %d \n", uhcp.deviceID);
-  get(void *)&uhcp);
-  next(void *)&uhcp);
-  get(void *)&uhcp);
+  get((void *)&uhcp);
+  next((void *)&uhcp);
+  get((void *)&uhcp);
 
   printf("[] test complete\n");
     

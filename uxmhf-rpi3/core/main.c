@@ -627,7 +627,7 @@ void secondary_main(u32 cpuid){
 }
 
 
-
+#if 0
 //////
 // test functions
 //////
@@ -666,4 +666,6 @@ void uart_testrecv(void){
 
     _XDPRINTF_("%s: Total chars received=%u\n", __func__, num_count);
 }
+
+#endif
 
