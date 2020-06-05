@@ -95,11 +95,13 @@ uapp-uhsign.o : ../uapps/uapp-uhsign/uapp-uhsign.c
 OPT_FILES += uapp-uhsign.o
 endif
 
-ifeq ($(ENABLE_UAPP_UAGENT), y)
+uapp-uhstateDB.o : ../uapps/uapp-uhstateDB/uapp-uhstateDB.c
+	$(TOOLPREFIX)gcc $(CFLAGS) ../uapps/uapp-uhstateDB/uapp-uhstateDB.c -o uapp-uhstateDB.o
+OPT_FILES += uapp-uhstateDB.o
+
 uapp-uagent.o : ../uapps/uapp-uagent/uapp-uagent.c
-	$(TOOLPREFIX)gcc $(CFLAGS) ../uapps/uapp-uagent/uapp-uagent.c -o uapp-uagent.o 
+	$(TOOLPREFIX)gcc $(CFLAGS) ../uapps/uapp-uagent/uapp-uagent.c -o uapp-uagent.o
 OPT_FILES += uapp-uagent.o
-endif
 
 ifeq ($(ENABLE_UAPP_PVDRIVER_UART), y)
 uapp-pvdriver-uart.o : ../uapps/uapp-pvdriver-uart/uapp-pvdriver-uart.c
