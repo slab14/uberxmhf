@@ -41,11 +41,9 @@ atags.o : ../common/atags.c
 arm8-32.o : ../common/arm8-32.s
 	$(TOOLPREFIX)gcc $(CFLAGS) -D__ASSEMBLY__ ../common/arm8-32.s -o arm8-32.o
 
-ifeq ($(filter $(ENABLE_UAPP_UAGENT) $(ENABLE_UAPP_UHSIGN),y),y)
 whitelist.o : ../common/whitelist.c
 	$(TOOLPREFIX)gcc $(CFLAGS) ../common/whitelist.c -o whitelist.o
 OPT_FILES += whitelist.o
-endif
 
 hypvtablestubs.o : hypvtablestubs.s
 	$(TOOLPREFIX)gcc $(CFLAGS) hypvtablestubs.s -o hypvtablestubs.o
@@ -89,11 +87,9 @@ hyptimer.o : hyptimer.c
 uapp-uhcalltest.o : ../uapps/uapp-uhcalltest/uapp-uhcalltest.c
 	$(TOOLPREFIX)gcc $(CFLAGS) ../uapps/uapp-uhcalltest/uapp-uhcalltest.c -o uapp-uhcalltest.o
 
-ifeq ($(ENABLE_UAPP_UHSIGN), y)
 uapp-uhsign.o : ../uapps/uapp-uhsign/uapp-uhsign.c
 	$(TOOLPREFIX)gcc $(CFLAGS) ../uapps/uapp-uhsign/uapp-uhsign.c -o uapp-uhsign.o 
 OPT_FILES += uapp-uhsign.o
-endif
 
 uapp-uhstateDB.o : ../uapps/uapp-uhstateDB/uapp-uhstateDB.c
 	$(TOOLPREFIX)gcc $(CFLAGS) ../uapps/uapp-uhstateDB/uapp-uhstateDB.c -o uapp-uhstateDB.o
