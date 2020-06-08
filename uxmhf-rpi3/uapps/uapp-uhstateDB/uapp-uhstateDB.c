@@ -56,22 +56,26 @@ __attribute__((section(".data"))) int32_t DB_SET=0;
 bool uapp_uhstateDB_handlehcall(u32  uhcall_function, void *uhcall_buffer, u32 uhcall_buffer_len)
 {
   uhstatedb_param_t *uhcp;
+
+  if((uhcall_function != UAPP_UHSTATEDB_FUNCTION_GET) && (uhcall_function != UAPP_UHSTATEDB_FUNCTION_NEXT) && (uhcall_function != UAPP_UHSTATEDB_FUNCTION_INIT))
+    return false;
+  
   uhcp = (uhstatedb_param_t *)uhcall_buffer;
   int i;
 
   //call acl function
   uapp_checkacl(sysreg_read_elrhyp());
 
-  if(DB_SET==0) {
-    if(uhcall_function != UAPP_UHSTATEDB_FUNCTION_INIT)
-      return false;
+  if(uhcall_function == UAPP_UHSTATEDB_FUNCTION_INIT) {
+    if(DB_SET==0) {
 
-    // Initialize maximum state values, based upon input
-    for(i=0; i<uhcp->numStates; i++){
-      maxStateDB[i]=uhcp->maxArray[i];
+      // Initialize maximum state values, based upon input
+      for(i=0; i<uhcp->numStates; i++){
+	maxStateDB[i]=uhcp->maxArray[i];
+      }
+      // only allow this to run once.
+      DB_SET = 1;
     }
-    // only allow this to run once.
-    DB_SET = 1;
     return true;
   }
 
