@@ -90,13 +90,13 @@ static void uhcallkmod_hvc(u32 uhcall_function, void *uhcall_buffer,
 
 static int dev_open(struct inode *inodep, struct file *filep){
    number_opens++;
-   printk(KERN_INFO "uhcallkmod: device has been opened %d time(s)\n", number_opens);
+   //printk(KERN_INFO "uhcallkmod: device has been opened %d time(s)\n", number_opens);
    return 0;
 }
 
 static int dev_release(struct inode *inodep, struct file *filep){
    number_opens--;
-   printk(KERN_INFO "uhcallkmod: device successfully closed\n");
+   //printk(KERN_INFO "uhcallkmod: device successfully closed\n");
    return 0;
 }
 
@@ -111,8 +111,8 @@ static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, lof
 
 	uhcallp = (uhcallkmod_param_t *)buffer;
 
-	printk(KERN_INFO "uhcallkmod: dev_write: uhcall_function=0x%08x, uhcall_buffer=0x%08x, uhcall_buffer_len=0x%08x\n",
-			uhcallp->uhcall_function, uhcallp->uhcall_buffer, uhcallp->uhcall_buffer_len);
+	//printk(KERN_INFO "uhcallkmod: dev_write: uhcall_function=0x%08x, uhcall_buffer=0x%08x, uhcall_buffer_len=0x%08x\n",
+	//	uhcallp->uhcall_function, uhcallp->uhcall_buffer, uhcallp->uhcall_buffer_len);
 
 	uhcallkmod_hvc(uhcallp->uhcall_function, uhcallp->uhcall_buffer, uhcallp->uhcall_buffer_len);
 	//uhcallkmod_hvc(uhcallp->uhcall_function, &buffer, uhcallp->uhcall_buffer_len);
@@ -123,35 +123,35 @@ static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, lof
 //module initialization function
 int uhcallkmod_init(void)
 {
-	printk(KERN_INFO "uhcallkmod: LOAD\n");
-	printk(KERN_INFO "author: amit vasudevan (amitvasudevan@acm.org)\n");
+  //printk(KERN_INFO "uhcallkmod: LOAD\n");
+  //printk(KERN_INFO "author: amit vasudevan (amitvasudevan@acm.org)\n");
 
 	//try to allocate a major number dynamically
 	major_number = register_chrdev(0, DEVICE_NAME, &fops);
 	if (major_number<0){
-	  printk(KERN_ALERT "uhcallkmod: failed to register a major number\n");
+	  //printk(KERN_ALERT "uhcallkmod: failed to register a major number\n");
 	  return major_number;
 	}
-	printk(KERN_INFO "uhcallkmod: registered correctly with major number %d\n", major_number);
+	//printk(KERN_INFO "uhcallkmod: registered correctly with major number %d\n", major_number);
 
 	// Register the device class
 	hypcallcharClass = class_create(THIS_MODULE, CLASS_NAME);
 	if (IS_ERR(hypcallcharClass)){
 	  unregister_chrdev(major_number, DEVICE_NAME);
-	  printk(KERN_ALERT "uhcallkmod: Failed to register device class\n");
+	  //printk(KERN_ALERT "uhcallkmod: Failed to register device class\n");
 	  return PTR_ERR(hypcallcharClass);
 	}
-	printk(KERN_INFO "uhcallkmod: device class registered correctly\n");
+	//printk(KERN_INFO "uhcallkmod: device class registered correctly\n");
 
 	// register the device driver
 	hypcallcharDevice = device_create(hypcallcharClass, NULL, MKDEV(major_number, 0), NULL, DEVICE_NAME);
 	if (IS_ERR(hypcallcharDevice)){
 	  class_destroy(hypcallcharClass);
 	  unregister_chrdev(major_number, DEVICE_NAME);
-	  printk(KERN_ALERT "uhcallkmod:Failed to create the device\n");
+	  //printk(KERN_ALERT "uhcallkmod:Failed to create the device\n");
 	  return PTR_ERR(hypcallcharDevice);
 	}
-	printk(KERN_INFO "uhcallkmod: device class created correctly\n");
+	//printk(KERN_INFO "uhcallkmod: device class created correctly\n");
 
 
 	return 0;
@@ -164,7 +164,7 @@ void uhcallkmod_exit(void)
 	class_unregister(hypcallcharClass);                          // unregister the device class
 	class_destroy(hypcallcharClass);                             // remove the device class
 	unregister_chrdev(major_number, DEVICE_NAME);             // unregister the major number
-	printk(KERN_INFO "uhcallkmod: UNLOAD\n");
+	//printk(KERN_INFO "uhcallkmod: UNLOAD\n");
 }
 
 module_init(uhcallkmod_init);
