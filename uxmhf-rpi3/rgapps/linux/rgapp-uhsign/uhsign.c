@@ -56,14 +56,22 @@
 #include <hmac-sha1.h>
 #include <hmac-sha256.h>
 
+#include <sys/time.h>
+
 __attribute__((aligned(4096))) __attribute__((section(".data"))) uhsign_param_t uhcp;
 
 void do_uhsign(void *bufptr) {
+  struct timeval st, et;
+  gettimeofday(&st,NULL);
   uhsign_param_t *ptr_uhcp = (uhsign_param_t *)bufptr;
-  if(!uhcall(UAPP_UHSIGN_FUNCTION_SIGN, ptr_uhcp, sizeof(uhsign_param_t)))    
+  if(!uhcall(UAPP_UHSIGN_FUNCTION_SIGN, ptr_uhcp, sizeof(uhsign_param_t))){
+    gettimeofday(&et,NULL);
     printf("hypercall FAILED\n");
+  }
   else
     printf("SUCCESS\n");
+
+  printf("time = %ld microsec\n", ((et.tv_sec*1000000 + et.tv_usec)-(st.tv_sec*1000000 + st.tv_usec)));
 
 
   printf("Digest: ");
