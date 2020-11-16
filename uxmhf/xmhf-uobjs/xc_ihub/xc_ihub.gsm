@@ -11,7 +11,8 @@
 #include <xh_syscalllog.h>
 #include <xh_ssteptrace.h>
 #include <xh_aprvexec.h>
-
+#include <xh_agent.h>
+#include <xh_uhstatedb.h>
 
 {
 	"uobj-name": "xc_ihub",
@@ -24,8 +25,8 @@
 						uapi_hcpustate
 						uapi_sysdata
 						uapi_slabmempgtbl
-						xh_hyperdep
 						xh_syscalllog
+						xh_uhstatedb
 						xh_ssteptrace
 						xc_exhub
 					",

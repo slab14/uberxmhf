@@ -52,7 +52,7 @@
 		{
 			"access-type" : "read",
 			"uobj-name" : "xh_syscalllog"
-		},
+		},		
 		{
 			"access-type" : "read",
 			"uobj-name" : "xh_ssteptrace"
